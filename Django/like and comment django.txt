@@ -1,0 +1,42 @@
+views
+------------------------------------------------------
+def viewpost(request,id):
+    post = tbl_post.objects.get(id=id)
+    like = tbl_like.objects.filter(post=post).count()
+    condotion = 0
+    if like > 0:
+        condition = 1
+    else:
+        condition = 0
+    return render(request,"User/ViewPost.html",{"postdata":post,"count":like,"condition":condition})
+
+def ajaxlike(request):
+    likecount = tbl_like.objects.filter(user=request.session["uid"],post=request.GET.get("postid")).count()
+    if likecount > 0:
+        tbl_like.objects.get(user=request.session["uid"],post=request.GET.get("postid")).delete()
+        count = tbl_like.objects.filter(user=request.session["uid"],post=request.GET.get("postid")).count()
+        return JsonResponse({"color":1,"count":count})
+    else:
+        tbl_like.objects.create(user=tbl_userregistration.objects.get(id=request.session["uid"]),post=tbl_post.objects.get(id=request.GET.get("postid")))
+        count = tbl_like.objects.filter(user=request.session["uid"],post=request.GET.get("postid")).count()
+        return JsonResponse({"color":0,"count":count})
+
+def ajaxcomment(request):
+    tbl_commant.objects.create(user=tbl_userregistration.objects.get(id=request.session["uid"]),post=tbl_post.objects.get(id=request.GET.get("postid")),comment_content=request.GET.get("content"))
+    comment = tbl_commant.objects.filter(post=request.GET.get("postid"))
+    return render(request,"User/AjaxComment.html",{"comment":comment})
+
+def ajaxgetcommant(request):
+    comment = tbl_commant.objects.filter(post=request.GET.get("postid"))
+    return render(request,"User/AjaxComment.html",{"comment":comment})
+
+
+urls
+-----------------------------------------------------------------
+path('ViewPost/<int:id>', views.viewpost,name="ViewPost"),
+path('ajaxlike/',views.ajaxlike,name="ajaxlike"),
+    path('ajaxcomment/',views.ajaxcomment,name="ajaxcomment"),
+    path('ajaxgetcommant/',views.ajaxgetcommant,name="ajaxgetcommant"),
+
+
+
