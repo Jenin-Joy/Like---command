@@ -38,5 +38,14 @@ path('ajaxlike/',views.ajaxlike,name="ajaxlike"),
     path('ajaxcomment/',views.ajaxcomment,name="ajaxcomment"),
     path('ajaxgetcommant/',views.ajaxgetcommant,name="ajaxgetcommant"),
 
+models
+-----------------------------------------------------------------------
 
+class tbl_like(models.Model):
+    post = models.ForeignKey(tbl_post,on_delete=models.CASCADE)
+    user = models.ForeignKey(tbl_userregistration,on_delete=models.CASCADE)
 
+class tbl_commant(models.Model):
+    post = models.ForeignKey(tbl_post,on_delete=models.CASCADE)
+    user = models.ForeignKey(tbl_userregistration,on_delete=models.CASCADE)
+    comment_content = models.CharField(max_length=100)
